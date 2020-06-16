@@ -10,6 +10,8 @@ License:        Reserved
 URL:            https://github.com/uwcms/APx-%{name}
 Source0:        %{name}-%{pkg_version}.tar.gz
 
+%global debug_package %{nil}
+
 %description
 This package provides a simple UIO based peek/poke command.
 
