@@ -40,7 +40,7 @@
 
 void usage(char *prog)
 {
-	printf("usage: %s /dev/uio0 MAPPING OFFSET\n",prog);
+	printf("usage: %s /dev/uio0 [MAPPING] OFFSET\n",prog);
 	printf("\n");
 	printf("MAPPING and OFFSET may be specified as hex values\n");
 }
@@ -52,8 +52,9 @@ int main(int argc, char *argv[])
 	void *ptr;
 	unsigned addr, mapping, page_mask, map_size;
 	unsigned page_size=sysconf(_SC_PAGESIZE);
+	page_mask = ~(page_size - 1); // mask of page-selector address bits
 
-	if(argc!=4) {
+	if(argc!=4 && argc!=3) {
 		usage(argv[0]);
 		exit(-1);
 	}
@@ -64,9 +65,14 @@ int main(int argc, char *argv[])
 		exit(-1);
 	}
 
-	page_mask = ~(page_size - 1); // mask of page-selector address bits
-	mapping = strtoul(argv[2],NULL,0);
-	addr = strtoul(argv[3],NULL,0);
+	if (argc == 3) {
+		mapping = 0;
+		addr = strtoul(argv[2],NULL,0);
+	}
+	else {
+		mapping = strtoul(argv[2],NULL,0);
+		addr = strtoul(argv[3],NULL,0);
+	}
 	map_size = (addr & page_mask) + page_size; // what page it is in, plus the length of that page.
 
 	ptr=mmap(NULL,map_size,PROT_READ,MAP_SHARED,fd,mapping);
