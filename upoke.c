@@ -32,6 +32,7 @@
 *
 */
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -49,8 +50,8 @@ int main(int argc, char *argv[])
 {
 	int fd;
 	void *ptr;
-	unsigned val;
-	unsigned addr, mapping,  page_mask, map_size;
+	unsigned long int val;
+	uintptr_t addr, mapping,  page_mask, map_size;
 	unsigned page_size=sysconf(_SC_PAGESIZE);
 	page_mask = ~(page_size - 1); // mask of page-selector address bits
 
@@ -67,18 +68,18 @@ int main(int argc, char *argv[])
 
 	if (argc == 4) {
 		mapping = 0;
-		addr = strtoul(argv[2],NULL,0);
-		val = strtoul(argv[3],NULL,0);
+		addr = strtoull(argv[2],NULL,0);
+		val = strtoull(argv[3],NULL,0);
 	}
 	else {
-		mapping = strtoul(argv[2],NULL,0);
-		addr = strtoul(argv[3],NULL,0);
-		val = strtoul(argv[4],NULL,0);
+		mapping = strtoull(argv[2],NULL,0);
+		addr = strtoull(argv[3],NULL,0);
+		val = strtoull(argv[4],NULL,0);
 	}
 	map_size = (addr & page_mask) + page_size; // what page it is in, plus the length of that page.
 
 	ptr=mmap(NULL,map_size,PROT_READ|PROT_WRITE,MAP_SHARED,fd,mapping);
-	if((int)ptr==-1) {
+	if((uintptr_t)ptr==-1) {
 		perror(argv[0]);
 		exit(-1);
 	}
